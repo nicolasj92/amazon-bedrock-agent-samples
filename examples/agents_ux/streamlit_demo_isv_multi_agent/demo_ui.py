@@ -12,7 +12,6 @@ from streamlit_flow.elements import StreamlitFlowNode, StreamlitFlowEdge
 from streamlit_flow.state import StreamlitFlowState
 from streamlit_flow.layouts import TreeLayout
 from streamlit_cognito_auth import CognitoAuthenticator
-from streamlit_react_flow import react_flow
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent.parent))
 
