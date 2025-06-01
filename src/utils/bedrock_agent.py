@@ -30,7 +30,8 @@ from textwrap import dedent
 from typing import List, Dict, Optional
 import time
 from dataclasses import dataclass
-from typing import Self, Callable, Union
+from typing import Callable, Union
+from typing_extensions import Self
 from enum import Enum
 import yaml
 from src.utils.bedrock_agent_helper import AgentsForAmazonBedrock
