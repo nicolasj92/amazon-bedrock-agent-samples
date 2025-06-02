@@ -122,6 +122,7 @@ def login_flow():
         )
         groups = [group['GroupName'] for group in groups_response.get('Groups', [])]
 
+        # TODO @njourdan: add cleaner way of determining the tenant id
         st.session_state["login_info"] = {
             "tenant_id": groups[0],
             "user_id": username,

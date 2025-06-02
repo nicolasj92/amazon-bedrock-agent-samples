@@ -208,12 +208,13 @@ def invoke_agent(input_text, session_id, task_yaml_content, log_md):
         else:
             session_state = {
                 "sessionAttributes": st.session_state["login_info"]
-            }    
+            }
+
+        # TODO @njourdan: add cleaner way of determining the tenant id
+        session_state["sessionAttributes"]["tenant_id"] = st.session_state["login_info"]["tenant_id"].split("-")[-1] 
 
         if 'promptSessionAttributes' in _bot_config['session_attributes']:
             session_state['promptSessionAttributes'] = _bot_config['session_attributes']['promptSessionAttributes']
-
-        print(session_state)
 
         response = client.invoke_agent(
             agentId=_bot_config['agent_id'],
