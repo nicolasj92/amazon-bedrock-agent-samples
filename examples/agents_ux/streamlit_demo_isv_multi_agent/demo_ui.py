@@ -322,18 +322,34 @@ class EnhancedCognitoAuth:
                 """, unsafe_allow_html=True)
                 
                 # Map groups to icons (consistent mapping using hash)
-                icons = ["🔑", "🛡️", "👤", "🔧", "📊"]
+                icons = ["⚙️", "🏭", "🔩", "⛽", "🏗️"]
                 
                 def get_icon_for_group(group_name):
                     hash_value = sum(ord(c) for c in group_name) % len(icons)
                     return icons[hash_value]
                 
+                # Get group descriptions
+                group_descriptions = {}
+                try:
+                    for group in groups:
+                        group_info = self.cognito_client.get_group(
+                            GroupName=group,
+                            UserPoolId=self.config.pool_id
+                        )
+                        group_descriptions[group] = group_info.get('Group', {}).get('Description', '')
+                except Exception as e:
+                    print(f"Error fetching group descriptions: {str(e)}")
+                
                 for group in groups:
                     icon = get_icon_for_group(group)
+                    company_name = group_descriptions.get(group, '')
                     st.markdown(f"""
                     <div style="padding: 8px; margin-bottom: 8px; border-radius: 5px; background-color: #e6f3ff; display: flex; align-items: center;">
                         <span style="font-size: 18px; margin-right: 10px;">{icon}</span>
-                        <span>Tenant ID: {group}</span>
+                        <div>
+                            <div style="font-weight: bold;">{company_name}</div>
+                            <div>Tenant ID: {group}</div>
+                        </div>
                     </div>
                     """, unsafe_allow_html=True)
             
