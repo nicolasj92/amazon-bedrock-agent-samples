@@ -3,6 +3,7 @@ import streamlit as st
 import datetime
 import json
 import math
+import os
 from collections import defaultdict
 from src.utils.bedrock_agent import Task
 from streamlit_flow import streamlit_flow
@@ -10,13 +11,19 @@ from streamlit_flow.elements import StreamlitFlowNode, StreamlitFlowEdge
 from streamlit_flow.state import StreamlitFlowState
 from streamlit_flow.layouts import TreeLayout
 
-supervisor_agent = "energy-agent-101eee65"
-agent_id_to_name_lookup = {
-    "T9JSE1S23X": "forecast-101eee65",
-    "JDDIIBZOYH" : "solar-p-101eee65",
-    "Q2MJBPMIIH": "peak-agent-101eee65",
-    "CG8AN5GY0T": "energy-agent-101eee65",
-}
+supervisor_agent = os.environ.get("SUPERVISOR_AGENT", "energy-agent-101eee65")
+
+# Load agent mapping from environment variables
+agent_id_to_name_lookup = {}
+
+# Check for AGENT_MAPPING environment variable (JSON format)
+agent_mapping_json = os.environ.get("AGENT_MAPPING", "")
+if agent_mapping_json:
+    try:
+        agent_id_to_name_lookup = json.loads(agent_mapping_json)
+    except json.JSONDecodeError:
+        st.error(f"Error parsing AGENT_MAPPING environment variable: {agent_mapping_json}")
+        st.stop()
 
 def make_full_prompt(tasks, additional_instructions, processing_type="sequential"):
     """Build a full prompt from tasks and instructions."""

@@ -55,9 +55,13 @@ class CognitoConfig:
     @classmethod
     def from_secrets_manager(cls, secret_name: str = "cognito_streamlit_auth", 
                            region_name: str = "us-west-2",
-                           redirect_uri: str = "http://localhost:8501") -> 'CognitoConfig':
+                           redirect_uri: str = None) -> 'CognitoConfig':
         """Create config from AWS Secrets Manager"""
         secrets = get_cognito_secrets(secret_name, region_name)
+        
+        # Use environment variable for redirect URI if available, otherwise use default
+        if redirect_uri is None:
+            redirect_uri = os.environ.get('REDIRECT_URI', 'http://localhost:8501')
         
         # Extract domain from pool_id if not explicitly provided
         pool_id = secrets["cognito_pool_id"]
@@ -424,8 +428,8 @@ def main():
     try:
         config = CognitoConfig.from_secrets_manager(
             secret_name="cognito_streamlit_auth",
-            region_name="us-west-2",
-            redirect_uri="http://localhost:8501"  # Use from secrets if available
+            region_name="us-west-2"
+            # No redirect_uri specified - will be determined from environment variable
         )
     except Exception as e:
         st.error(f"Failed to load configuration: {str(e)}")
