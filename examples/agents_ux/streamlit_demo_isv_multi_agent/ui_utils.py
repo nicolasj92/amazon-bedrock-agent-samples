@@ -211,7 +211,9 @@ def invoke_agent(input_text, session_id, task_yaml_content, log_md):
             }
 
         # TODO @njourdan: add cleaner way of determining the tenant id
+        del session_state["sessionAttributes"]["groups"]
         session_state["sessionAttributes"]["tenant_id"] = st.session_state["login_info"]["tenant_id"].split("-")[-1] 
+        print(session_state["sessionAttributes"]["tenant_id"] )
 
         if 'promptSessionAttributes' in _bot_config['session_attributes']:
             session_state['promptSessionAttributes'] = _bot_config['session_attributes']['promptSessionAttributes']

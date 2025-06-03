@@ -2,4 +2,3 @@ streamlit
 boto3
 pyyaml
 streamlit-flow-component
-streamlit-cognito-auth
