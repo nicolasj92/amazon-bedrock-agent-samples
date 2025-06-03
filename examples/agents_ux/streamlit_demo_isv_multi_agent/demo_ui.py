@@ -281,40 +281,7 @@ class EnhancedCognitoAuth:
         # Redirect to Cognito logout
         logout_url = self.get_logout_url()
         st.rerun()
-    
-    def render_login_page(self):
-        """Render the login page"""
-        st.title("🔐 Authentication Required")
-        st.write("Please log in to access the ISV Energy Portal.")
-        
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            login_url = self.get_login_url()
-            st.markdown(
-                f"""
-                <div style="text-align: center; margin: 2rem 0;">
-                    <a href="{login_url}" target="_self" style="text-decoration: none;">
-                        <button style="
-                            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-                            color: white;
-                            padding: 12px 24px;
-                            border: none;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                            transition: transform 0.2s;
-                        "
-                        onmouseover="this.style.transform='translateY(-2px)'"
-                        onmouseout="this.style.transform='translateY(0px)'">
-                            ⚡ Login to Energy Portal
-                        </button>
-                    </a>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+
     
     def render_sidebar_user_info(self):
         """Render user information in sidebar (matching your existing style)"""
@@ -331,7 +298,7 @@ class EnhancedCognitoAuth:
             # Add logo/header
             st.markdown("""
             <div style="text-align: center; margin-bottom: 20px;">
-                <h3>⚡ ISV Energy Portal</h3>
+                <h3>⚡ EnergyERP Portal</h3>
                 <hr>
             </div>
             """, unsafe_allow_html=True)
@@ -366,7 +333,7 @@ class EnhancedCognitoAuth:
                     st.markdown(f"""
                     <div style="padding: 8px; margin-bottom: 8px; border-radius: 5px; background-color: #e6f3ff; display: flex; align-items: center;">
                         <span style="font-size: 18px; margin-right: 10px;">{icon}</span>
-                        <span>{group}</span>
+                        <span>Tenant ID: {group}</span>
                     </div>
                     """, unsafe_allow_html=True)
             
@@ -394,7 +361,7 @@ def initialize_session():
                 continue
 
         # Get bot configuration
-        bot_name = os.environ.get('BOT_NAME', 'Energy Assistant')
+        bot_name = os.environ.get('BOT_NAME', 'EnergyERP Assistant')
         bot_config = next((config for config in bot_configs if config['bot_name'] == bot_name), None)
 
 
@@ -473,19 +440,23 @@ def main():
             # Show welcome message if no messages yet and no user input
             if len(st.session_state.messages) == 0 and ('user_input' not in st.session_state or st.session_state["user_input"] is None):
                 st.markdown("""
-                            <div style="padding: 20px; border-radius: 10px; background-color: #f0f2f6; margin-bottom: 20px;">
-                                <h3>👋 Welcome to the Energy Assistant!</h3>
-                                <p>I can help you with various energy-related queries. Here are some examples you can try:</p>
-                                <ul>
-                                    <li>📊 <b>"Show me energy consumption trends for the last quarter"</b></li>
-                                    <li>💡 <b>"What are some ways to reduce my energy costs?"</b></li>
-                                    <li>🔌 <b>"Compare solar and wind energy efficiency"</b></li>
-                                    <li>🏭 <b>"Explain carbon credits and how they work"</b></li>
-                                </ul>
-                                <p>Type your question below to get started!</p>
-                                <div style="text-align: right; font-size: 12px; color: #666; margin-top: 10px;">Powered by Amazon Bedrock</div>
-                            </div>
+                    <div style="padding: 20px; border-radius: 10px; background-color: #f0f2f6; margin-bottom: 20px;">
+                        <h3>🏢 Welcome to EnergyERP Multi-Agent Assistant!</h3>
+                        <p>I coordinate specialized AI agents to help optimize your facility's energy management. Try asking:</p>
+                        <ul>
+                            <li>📊 <b>"Can you analyze our usage over the past month and identify any unusual spikes?"</b></li>
+                            <li>☀️ <b>"Can you help me understand if solar panels would be cost-effective?"</b></li>
+                            <li>⚡ <b>"What's causing my peak load?"</b></li>
+                            <li>🎫 <b>"Can I get all tickets that I have?"</b></li>
+                        </ul>
+                        <p><b>Available Agents:</b> Forecasting • Solar Panel Management • Peak Load Optimization</p>
+                        <p>Type your energy management question below - I'll route it to the right specialist!</p>
+                        <div style="text-align: right; font-size: 12px; color: #666; margin-top: 10px;">
+                            EnergyERP Multi-Agent System • Powered by Amazon Bedrock
+                        </div>
+                    </div>
                 """, unsafe_allow_html=True)
+
 
             # Show message history
             for idx, message in enumerate(st.session_state.messages):
@@ -520,17 +491,17 @@ def main():
                     # Get and display assistant response
                     response = ""
                     with st.chat_message("assistant"):
-                        try:
-                            response = st.write_stream(invoke_agent(
-                                user_query, 
-                                st.session_state['session_id'], 
-                                st.session_state['task_yaml_content'],
-                                trace_writer
-                            ))
-                        except Exception as e:
-                            print(f"Error: {e}")  # Keep logging for debugging
-                            st.error(f"An error occurred: {str(e)}")  # Show error in UI
-                            response = "I encountered an error processing your request. Please try again."
+                        # try:
+                        response = st.write_stream(invoke_agent(
+                            user_query, 
+                            st.session_state['session_id'], 
+                            st.session_state['task_yaml_content'],
+                            trace_writer
+                        ))
+                        # except Exception as e:
+                        #     print(f"Error: {e}")  # Keep logging for debugging
+                        #     st.error(f"An error occurred: {str(e)}")  # Show error in UI
+                        #     response = "I encountered an error processing your request. Please try again."
 
                     status_box.update(state="complete")
 

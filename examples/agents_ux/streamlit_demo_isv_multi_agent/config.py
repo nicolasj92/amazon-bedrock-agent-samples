@@ -15,7 +15,7 @@ bot_configs = [
         "agent_name": "peak-agent-101eee65",
     },
     {
-        "bot_name": "Energy Assistant",
+        "bot_name": "EnergyERP Assistant",
         "agent_name": "energy-agent-101eee65",
         "start_prompt": "I'm your energy assistant. How can I help today?",
         "session_attributes": {

@@ -69,8 +69,13 @@ def process_routing_trace(event, step, _sub_agent_name, log_md, _time_before_rou
         _route_duration = datetime.datetime.now() - _time_before_routing
 
         _raw_resp_str = _route['modelInvocationOutput']['rawResponse']['content']
-        _raw_resp = json.loads(_raw_resp_str)
-        _classification = _raw_resp['content'][0]['text'].replace('<a>', '').replace('</a>', '')
+        # Parse the JSON response to extract the classification
+        try:
+            response_json = json.loads(_raw_resp_str)
+            _classification = response_json["output"]["message"]["content"][0]["text"].replace('<a>', '').replace('</a>', '')
+        except (json.JSONDecodeError, KeyError):
+            # Fallback to the old method if JSON parsing fails
+            _classification = _raw_resp_str.replace('<a>', '').replace('</a>', '')
 
         if _classification == "undecidable":
             text = f"No matching collaborator. Revert to 'SUPERVISOR' mode for this request."
@@ -220,7 +225,6 @@ def invoke_agent(input_text, session_id, task_yaml_content, log_md):
         # TODO @njourdan: add cleaner way of determining the tenant id
         del session_state["sessionAttributes"]["groups"]
         session_state["sessionAttributes"]["tenant_id"] = st.session_state["login_info"]["tenant_id"].split("-")[-1] 
-        print(session_state["sessionAttributes"]["tenant_id"] )
 
         if 'promptSessionAttributes' in _bot_config['session_attributes']:
             session_state['promptSessionAttributes'] = _bot_config['session_attributes']['promptSessionAttributes']
